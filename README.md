@@ -62,31 +62,14 @@ Bu proje, joystick'li bir kumanda ile dört motorlu bir aracı **araya giren bir
 
 ```mermaid
 flowchart LR
-    subgraph K["🎮 Kumanda · Nano"]
-        J[Joystick] --> MIX[Kalibrasyon +<br/>Diferansiyel Karışım]
-        MIX --> TX1[nRF24 PTX]
-        TX1 -. telemetri .-> LCD[16x2 I2C LCD]
-    end
+    K["🎮 <b>KUMANDA</b><br/>Arduino Nano<br/>Joystick · Kalibrasyon<br/>Diferansiyel karışım · LCD"]
+    A["📶 <b>AKTARICI</b><br/>Arduino Nano<br/>AKT01 → ARB02<br/>Anında iletim"]
+    R["🚗 <b>ARABA</b><br/>Arduino Uno<br/>L298N · HC-SR04<br/>Rampa · Vcc izleme"]
 
-    subgraph A["📶 Aktarıcı · Nano"]
-        RX2[Pipe 1 · AKT01] --> FWD[Anında İlet]
-        FWD --> TX2[Pipe 0 · ARB02]
-        TX2 -. telemetri .-> ACK[ACK Payload Kuyruğu]
-    end
-
-    subgraph R["🚗 Araba · Uno"]
-        RX3[nRF24 PRX] --> RAD[Radar Sınırlama]
-        RAD --> RMP[PWM Rampa]
-        RMP --> MOT[L298N · 4 Motor]
-        SR[HC-SR04] --> RAD
-        VCC[Vcc İzleme] --> TLM[Telemetri]
-        SR --> TLM
-    end
-
-    TX1 ==>|KomutPaketi · 13 B| RX2
-    TX2 ==>|KomutPaketi · 13 B| RX3
-    TLM -.->|ACK · 8 B| TX2
-    ACK -.->|ACK · 8 B| TX1
+    K ==>|"Komut · 13 B · 50 Hz"| A
+    A ==>|"Komut · 13 B"| R
+    R -.->|"Telemetri · 8 B · ACK"| A
+    A -.->|"Telemetri · 8 B · ACK"| K
 ```
 
 ---
